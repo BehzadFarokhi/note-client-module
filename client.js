@@ -81,12 +81,10 @@ async function makeRequestWithTokenRefresh(method, url, data = {}) {
         return response.data;
     } catch (error) {
         if (error.response && error.response.status === 401) {
-            // Token expired, attempt to refresh it
             console.log('Access token expired. Refreshing token...');
             const refreshResponse = await refreshToken(refToken);
 
             if (refreshResponse && refreshResponse.accessToken) {
-                // Retry the original API request with the new access token
                 accessToken = refreshResponse.accessToken;
                 const retryResponse = await axiosInstance.request({
                     url,
@@ -97,12 +95,11 @@ async function makeRequestWithTokenRefresh(method, url, data = {}) {
                 return retryResponse.data;
             } else {
                 console.error('Failed to refresh token.');
-                // Handle token refresh failure (e.g., redirect to login)
                 throw new Error('Failed to refresh token');
             }
         } else {
             console.error('API Request Error:', error.response?.data || error.message);
-            throw error;  // Handle other errors (e.g., network issues)
+            throw error; 
         }
     }
 }
